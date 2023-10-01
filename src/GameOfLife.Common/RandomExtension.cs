@@ -1,4 +1,4 @@
-﻿namespace GameOfLife.Data;
+﻿namespace GameOfLife.Common;
 
 public static class RandomExtension
 {

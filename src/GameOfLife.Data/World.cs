@@ -1,11 +1,12 @@
 ﻿using System.Text;
+using GameOfLife.Common;
 
 namespace GameOfLife.Data;
 
 public class World
 {
-    private bool[,] _matrix;
-    private Random _seeded;
+    private readonly bool[,] _matrix;
+    private readonly Random _seeded;
     
     public World(int rows, int columns)
     {
