@@ -1,43 +1,56 @@
-﻿namespace GameOfLife.Cli.Ui;
+﻿using GameOfLife.Common;
+
+namespace GameOfLife.Cli.Ui;
 
 public class Pane
 {
+    private readonly ConsoleColor _backgroundColor;
     private readonly Point _topLeft;
     private readonly Point _bottomRight;
-    public Point Position { get; private set; }
+    private Point _position;
 
     public Pane(
         int rows, 
         int columns, 
         int offsetLeft, 
-        int offsetTop)
+        int offsetTop,
+        ConsoleColor backgroundColor = default)
     {
+        _backgroundColor = backgroundColor;
         _topLeft = new Point { X = offsetLeft, Y = offsetTop };
         _bottomRight = new Point
         {
             X = _topLeft.X + columns,
             Y = _topLeft.Y + rows
         };
-        Position = new Point { X = _topLeft.X, Y = _topLeft.Y };
+        _position = new Point { X = _topLeft.X, Y = _topLeft.Y };
     }
 
     public void Write(string phrase)
     {
         var snap = Helpers.TakeSnapshot();
-        Console.SetCursorPosition(Position.X, Position.Y);
-        foreach (var character in phrase)
+        Console.SetCursorPosition(_position.X, _position.Y);
+        Console.BackgroundColor = _backgroundColor;
+
+        phrase = phrase.SanitizeNewLines();
+        var lines = phrase.SplitToPieces(_bottomRight.X - _topLeft.X).ToArray();
+        var last = lines.Last();
+        foreach (var line in lines)
         {
-            if (Console.CursorLeft > _bottomRight.X)
-            {
+            Console.Write(line);
+            if (!line.Equals(last))
                 Console.SetCursorPosition(
-                    _topLeft.X,                     // Reset left position
-                    Console.CursorTop + 1);         // and go to next row
-            }
-            Console.Write(character);
+                    _topLeft.X,
+                    Console.CursorTop + 1);
         }
 
         var temp = Console.GetCursorPosition();
-        Position = new Point { X = temp.Left, Y = temp.Top };
+        _position = new Point { X = temp.Left, Y = temp.Top };
         Helpers.ApplySnapshot(snap);
+    }
+
+    public void Reset()
+    {
+        _position = new Point { X = _topLeft.X, Y = _topLeft.Y };
     }
 }

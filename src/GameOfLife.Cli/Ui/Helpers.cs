@@ -1,6 +1,6 @@
 ﻿namespace GameOfLife.Cli.Ui;
 
-public class Helpers
+public static class Helpers
 {
      public static ConsoleSnap TakeSnapshot()
      {
@@ -8,12 +8,14 @@ public class Helpers
           return new ConsoleSnap
           {
                Top = position.Top,
-               Left = position.Left
+               Left = position.Left,
+               BackgroundColor = Console.BackgroundColor
           };
      }
 
      public static void ApplySnapshot(ConsoleSnap snap)
      {
           Console.SetCursorPosition(snap.Left, snap.Top);
+          Console.BackgroundColor = snap.BackgroundColor;
      }
 }
